@@ -29,17 +29,16 @@
 
 @interface HNStatusBar : UIWindow
 
-@property (nonatomic, strong) UIColor *textColor;
-@property (nonatomic, strong) UIFont *textFont;
-@property (nonatomic, strong) UIColor *progressBarColorFrom;
-@property (nonatomic, strong) UIColor *progressBarColorTo;
-@property (nonatomic, strong) UIColor *backgroundColor;
++ (void)setBackgroundColor:(UIColor *)color;
++ (void)setTextFont:(UIFont *)font;
++ (void)setTextColor:(UIColor *)color;
++ (void)setProgressBarGradientColorFrom:(UIColor *)fromColor to:(UIColor *)toColor;
 
 + (void)setText:(NSString *)text;
 + (void)setText:(NSString *)text during:(NSTimeInterval)duration;
 + (void)setText:(NSString *)text during:(NSTimeInterval)duration animated:(BOOL)animated;
 
-+ (void)clearText;
++ (void)clear;
 
 + (void)setProgress:(float)progress;
 

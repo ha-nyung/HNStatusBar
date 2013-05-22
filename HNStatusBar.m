@@ -37,6 +37,12 @@ static HNStatusBar *sharedInstance;
 
 @interface HNStatusBar ()
 
+@property (nonatomic, strong) UIColor *textColor;
+@property (nonatomic, strong) UIFont *textFont;
+@property (nonatomic, strong) UIColor *progressBarColorFrom;
+@property (nonatomic, strong) UIColor *progressBarColorTo;
+@property (nonatomic, strong) UIColor *backgroundColor;
+
 @property (nonatomic, strong) UIView *baseView;
 @property (nonatomic, strong) UILabel *textLabel;
 @property (nonatomic, assign) float progress;
@@ -45,7 +51,7 @@ static HNStatusBar *sharedInstance;
 + (HNStatusBar *)sharedInstance;
 
 - (void)setText:(NSString *)text during:(NSTimeInterval)duration animated:(BOOL)animated;
-- (void)clearText;
+- (void)clear;
 
 - (void)setBaseFrame;
 - (void)statusBarWillChangeFrame;
@@ -67,6 +73,27 @@ static HNStatusBar *sharedInstance;
     return sharedInstance;
 }
 
++ (void)setBackgroundColor:(UIColor *)color
+{
+    [[self sharedInstance] setBackgroundColor:color];
+}
+
++ (void)setTextFont:(UIFont *)font
+{
+    [[self sharedInstance] setTextFont:font];
+}
+
++ (void)setTextColor:(UIColor *)color
+{
+    [[self sharedInstance] setTextColor:color];
+}
+
++ (void)setProgressBarGradientColorFrom:(id)fromColor to:(UIColor *)toColor
+{
+    [[self sharedInstance] setProgressBarColorFrom:fromColor];
+    [[self sharedInstance] setProgressBarColorTo:toColor];
+}
+
 + (void)setText:(NSString *)text
 {
     [[self sharedInstance] setText:text during:DISAPPEAR_AFTER animated:YES];
@@ -82,9 +109,9 @@ static HNStatusBar *sharedInstance;
     [[self sharedInstance] setText:text during:duration animated:animated];
 }
 
-+ (void)clearText
++ (void)clear
 {
-    [[self sharedInstance] clearText];
+    [[self sharedInstance] clear];
 }
 
 + (void)setProgress:(float)progress
@@ -224,7 +251,7 @@ static HNStatusBar *sharedInstance;
     }
 }
 
-- (void)clearText
+- (void)clear
 {
     [self.textLabel removeFromSuperview];
     self.progress = 0;
