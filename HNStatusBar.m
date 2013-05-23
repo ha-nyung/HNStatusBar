@@ -144,7 +144,7 @@ static HNStatusBar *sharedInstance;
         [self addSubview:self.baseView];
         [self setBaseFrame];
 
-        self.hidden = [UIApplication sharedApplication].statusBarHidden;
+        self.hidden = YES;
 
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(statusBarWillChangeFrame)
