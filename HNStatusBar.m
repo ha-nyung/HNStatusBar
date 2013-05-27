@@ -232,6 +232,7 @@ static HNStatusBar *sharedInstance;
                     [UIView animateWithDuration:TRANSITION_DURATION animations:^{
                         textLabel.frame = frame;
                         textLabel.alpha = 0;
+                        self.hidden = YES;
                     } completion:^(BOOL finished) {
                         [textLabel removeFromSuperview];
                         if (([self.textLabel isEqual:textLabel] || !self.textLabel) && !self.progressBar) {
@@ -240,6 +241,7 @@ static HNStatusBar *sharedInstance;
                         }
                     }];
                 } else {
+                    self.hidden = YES;
                     [textLabel removeFromSuperview];
                     if (([self.textLabel isEqual:textLabel] || !self.textLabel) && !self.progressBar) {
                         self.textLabel = nil;
@@ -253,9 +255,9 @@ static HNStatusBar *sharedInstance;
 
 - (void)clear
 {
+    self.hidden = YES;
     [self.textLabel removeFromSuperview];
     self.progress = 0;
-    self.hidden = YES;
 }
 
 - (void)setProgress:(float)progress
