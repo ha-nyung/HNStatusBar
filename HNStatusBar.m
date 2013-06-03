@@ -59,7 +59,9 @@ static HNStatusBar *sharedInstance;
 
 @end
 
-@implementation HNStatusBar
+@implementation HNStatusBar {
+    BOOL _originalStatusBarHidden;
+}
 
 + (HNStatusBar *)sharedInstance
 {
@@ -145,6 +147,7 @@ static HNStatusBar *sharedInstance;
         [self setBaseFrame];
 
         self.hidden = YES;
+        _originalStatusBarHidden = self.hidden;
 
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(statusBarWillChangeFrame)
@@ -184,12 +187,18 @@ static HNStatusBar *sharedInstance;
     if (![keyPath isEqualToString:@"statusBarHidden"])
         return;
 
-    self.hidden = [UIApplication sharedApplication].statusBarHidden;
+    if ([UIApplication sharedApplication].statusBarHidden) {
+        self.hidden = YES;
+        _originalStatusBarHidden = YES;
+    } else {
+        self.hidden = _originalStatusBarHidden;
+    }
 }
 
 - (void)setText:(NSString *)text during:(NSTimeInterval)duration animated:(BOOL)animated
 {
     self.hidden = [UIApplication sharedApplication].statusBarHidden;
+    _originalStatusBarHidden = self.hidden;
 
     UILabel *oldTextLabel = self.textLabel;
 
@@ -233,6 +242,7 @@ static HNStatusBar *sharedInstance;
                         textLabel.frame = frame;
                         textLabel.alpha = 0;
                         self.hidden = YES;
+                        _originalStatusBarHidden = self.hidden;
                     } completion:^(BOOL finished) {
                         [textLabel removeFromSuperview];
                         if (([self.textLabel isEqual:textLabel] || !self.textLabel) && !self.progressBar) {
@@ -242,6 +252,7 @@ static HNStatusBar *sharedInstance;
                     }];
                 } else {
                     self.hidden = YES;
+                    _originalStatusBarHidden = self.hidden;
                     [textLabel removeFromSuperview];
                     if (([self.textLabel isEqual:textLabel] || !self.textLabel) && !self.progressBar) {
                         self.textLabel = nil;
@@ -256,6 +267,7 @@ static HNStatusBar *sharedInstance;
 - (void)clear
 {
     self.hidden = YES;
+    _originalStatusBarHidden = self.hidden;
     [self.textLabel removeFromSuperview];
     self.progress = 0;
 }
@@ -265,10 +277,13 @@ static HNStatusBar *sharedInstance;
     if (progress == 0) {
         [self.progressBar removeFromSuperlayer];
         self.progressBar = nil;
-        if (!self.textLabel)
+        if (!self.textLabel) {
             self.hidden = YES;
+            _originalStatusBarHidden = self.hidden;
+        }
     } else {
         self.hidden = [UIApplication sharedApplication].statusBarHidden;
+        _originalStatusBarHidden = self.hidden;
 
         if (!self.progressBar) { // lazy initialization
             self.progressBar = [[CAGradientLayer alloc] init];
