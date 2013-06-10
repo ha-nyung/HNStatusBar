@@ -53,10 +53,6 @@ static HNStatusBar *sharedInstance;
 - (void)setText:(NSString *)text during:(NSTimeInterval)duration animated:(BOOL)animated;
 - (void)clear;
 
-- (void)setBaseFrame;
-- (void)statusBarWillChangeFrame;
-- (void)statusBarWillChangeOrientation;
-
 @end
 
 @implementation HNStatusBar {
@@ -136,27 +132,22 @@ static HNStatusBar *sharedInstance;
         self.progressBarColorTo = [UIColor redColor];
 
         self.frame = [UIScreen mainScreen].bounds;
-        self.windowLevel = UIWindowLevelStatusBar;
+        self.windowLevel = UIWindowLevelStatusBar + 1;
         self.userInteractionEnabled = NO;
         self.autoresizesSubviews = YES;
         self.backgroundColor = [UIColor blackColor];
 
         self.baseView = [[UIView alloc] init];
         self.baseView.clipsToBounds = YES;
-        [self addSubview:self.baseView];
-        [self setBaseFrame];
+        CGRect frame = [UIApplication sharedApplication].statusBarFrame;
+        frame.size.height = 20;
+        self.baseView.frame = frame;
+        self.baseView.backgroundColor = [UIColor blackColor];
 
+        [self addSubview:self.baseView];
         self.hidden = YES;
         _originalStatusBarHidden = self.hidden;
 
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(statusBarWillChangeFrame)
-                                                     name:UIApplicationWillChangeStatusBarFrameNotification
-                                                   object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(statusBarWillChangeOrientation)
-                                                     name:UIApplicationWillChangeStatusBarOrientationNotification
-                                                   object:nil];
         [[UIApplication sharedApplication] addObserver:self
                                             forKeyPath:@"statusBarHidden"
                                                options:NSKeyValueObservingOptionNew
@@ -301,29 +292,4 @@ static HNStatusBar *sharedInstance;
     _progress = progress;
 }
 
-- (void)setBaseFrame
-{
-    CGRect frame = [UIApplication sharedApplication].statusBarFrame;
-    if (CGRectGetHeight(frame) > 22) { // two lines
-        frame.origin.y = CGRectGetHeight(frame) - 22;
-        frame.size.height = 22;
-        self.baseView.backgroundColor = [UIColor clearColor];
-    } else {
-        self.baseView.backgroundColor = self.backgroundColor;
-    }
-    self.baseView.frame = frame;
-}
-
-- (void)statusBarWillChangeFrame
-{
-    [UIView animateWithDuration:[UIApplication sharedApplication].statusBarOrientationAnimationDuration
-                     animations:^{
-                         [self setBaseFrame];
-                     }];
-}
-
-- (void)statusBarWillChangeOrientation
-{
-    // not implemented yet
-}
 @end
